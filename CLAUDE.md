@@ -38,6 +38,14 @@ Cloudflare 빌드 서버는 이 파일이 없어서 빌드 시 Supabase 연동�
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY` (publishable key)
 
+## PWA
+
+`vite-plugin-pwa` 사용 (Workbox 기반, `generateSW` 방식). 설정: `vite.config.ts`.
+- 아이콘: `public/pwa-192.png`, `public/pwa-512.png`, `public/maskable-icon.png`, `public/apple-touch-icon.png`
+  (지금은 브랜드색 단색 placeholder임, 실제 로고 생기면 교체할 것)
+- 빌드하면 `dist/manifest.webmanifest`, `dist/sw.js` 자동 생성됨
+- 폰에서 "홈 화면에 추가"하면 standalone 앱처럼 뜸
+
 ## 아키텍처 요약
 
 - React 18 + TypeScript + Vite, `HashRouter` 사용 (서버 라우팅 불필요)
