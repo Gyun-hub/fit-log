@@ -16,8 +16,19 @@ export function loadRecords(): ClothingRecord[] {
 export function saveRecords(records: ClothingRecord[]): void {
   localStorage.setItem(RECORDS_KEY, JSON.stringify(records))
   if (isSyncActive()) {
-    pushRecords(records).catch((err) => console.error('sync push failed', err))
+    pushRecords(records).catch((err) => {
+      console.error('sync push failed', err)
+      alert('저장 실패: 서버에 반영되지 않았습니다. 네트워크 확인 후 다시 시도하세요.')
+    })
   }
+}
+
+export function setLocalCache(records: ClothingRecord[]): void {
+  localStorage.setItem(RECORDS_KEY, JSON.stringify(records))
+}
+
+export function clearLocalCache(): void {
+  localStorage.removeItem(RECORDS_KEY)
 }
 
 export function createRecord(data: Omit<ClothingRecord, 'id' | 'createdAt'>): ClothingRecord {
