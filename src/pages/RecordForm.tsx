@@ -6,9 +6,10 @@ interface Props {
   initial?: ClothingRecord
   onSubmit: (data: Omit<ClothingRecord, 'id' | 'createdAt'>) => void
   onCancel: () => void
+  submitLabel?: string
 }
 
-export default function RecordForm({ initial, onSubmit, onCancel }: Props) {
+export default function RecordForm({ initial, onSubmit, onCancel, submitLabel = '저장' }: Props) {
   const [category, setCategory] = useState<Category>(initial?.category ?? '상의')
   const [brand, setBrand] = useState(initial?.brand ?? '')
   const [sizeLabel, setSizeLabel] = useState(initial?.sizeLabel ?? '')
@@ -175,7 +176,7 @@ export default function RecordForm({ initial, onSubmit, onCancel }: Props) {
           취소
         </button>
         <button type="submit" className="btn primary">
-          저장
+          {submitLabel}
         </button>
       </div>
     </form>
