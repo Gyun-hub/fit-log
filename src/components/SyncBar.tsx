@@ -20,8 +20,20 @@ export default function SyncBar() {
     try {
       const remote = await pullRecords(trimmed)
       if (remote) {
+        const proceed = confirm(
+          `코드 "${trimmed}"에 저장된 이력 ${remote.length}건 발견. 불러오면 이 기기의 현재 이력은 덮어써짐. 계속할까?`,
+        )
+        if (!proceed) {
+          setBusy(false)
+          return
+        }
         saveRecords(remote)
       } else {
+        const proceed = confirm(`코드 "${trimmed}"는 처음 쓰는 코드임. 새 동기화 그룹을 만들까?`)
+        if (!proceed) {
+          setBusy(false)
+          return
+        }
         await pushRecords(loadRecords())
       }
       setSyncCode(trimmed)
