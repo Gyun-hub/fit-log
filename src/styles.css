@@ -129,6 +129,15 @@ body {
   font-size: 14px;
 }
 
+.url-fetch-row {
+  display: flex;
+  gap: 6px;
+}
+
+.url-fetch-row input {
+  flex: 1;
+}
+
 .content {
   flex: 1;
   padding: 24px;
