@@ -19,6 +19,9 @@ export default function RecordForm({ initial, onSubmit, onCancel }: Props) {
   const [purchaseDate, setPurchaseDate] = useState(initial?.purchaseDate ?? '')
   const [productUrl, setProductUrl] = useState(initial?.productUrl ?? '')
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? '')
+  const [previewBusy, setPreviewBusy] = useState(false)
+  const [previewError, setPreviewError] = useState('')
+  const [previewInfo, setPreviewInfo] = useState('')
 
   function handleCategoryChange(next: Category) {
     setCategory(next)
@@ -33,6 +36,27 @@ export default function RecordForm({ initial, onSubmit, onCancel }: Props) {
       else copy[field] = num
       return copy
     })
+  }
+
+  async function handleFetchPreview() {
+    const trimmed = productUrl.trim()
+    if (!trimmed) return
+    setPreviewBusy(true)
+    setPreviewError('')
+    setPreviewInfo('')
+    try {
+      const res = await fetch(`/api/preview?url=${encodeURIComponent(trimmed)}`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? '가져오기 실패')
+      if (data.image) setImageUrl(data.image)
+      const infoParts = [data.title, data.price ? `${data.price}원` : ''].filter(Boolean)
+      if (infoParts.length > 0) setPreviewInfo(infoParts.join(' · '))
+      if (!data.image && infoParts.length === 0) setPreviewError('가져올 정보 없음 (사이트가 og 태그 미지원)')
+    } catch (err) {
+      setPreviewError(err instanceof Error ? err.message : '가져오기 실패')
+    } finally {
+      setPreviewBusy(false)
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -116,17 +140,30 @@ export default function RecordForm({ initial, onSubmit, onCancel }: Props) {
       <div className="form-row">
         <label>
           상품 URL
-          <input
-            value={productUrl}
-            onChange={(e) => setProductUrl(e.target.value)}
-            placeholder="https://..."
-          />
+          <div className="url-fetch-row">
+            <input
+              value={productUrl}
+              onChange={(e) => setProductUrl(e.target.value)}
+              placeholder="https://..."
+            />
+            <button
+              type="button"
+              className="btn small"
+              onClick={handleFetchPreview}
+              disabled={previewBusy || !productUrl.trim()}
+            >
+              {previewBusy ? '가져오는 중...' : '가져오기'}
+            </button>
+          </div>
         </label>
         <label>
           이미지 URL
           <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." />
         </label>
       </div>
+      {(previewInfo || previewError) && (
+        <p className={previewError ? 'sync-error' : 'hint'}>{previewError || previewInfo}</p>
+      )}
 
       <label className="notes">
         메모
