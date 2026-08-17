@@ -234,6 +234,17 @@ body {
   padding: 14px 16px;
 }
 
+.record-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+
+.record-card-link:hover {
+  border-color: #2563eb;
+}
+
 .record-card-head {
   display: flex;
   align-items: center;

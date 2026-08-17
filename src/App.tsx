@@ -1,6 +1,8 @@
 import { HashRouter, Routes, Route, NavLink } from 'react-router-dom'
 import History from './pages/History'
 import Check from './pages/Check'
+import RecordNew from './pages/RecordNew'
+import RecordDetail from './pages/RecordDetail'
 import SyncBar from './components/SyncBar'
 
 export default function App() {
@@ -20,6 +22,8 @@ export default function App() {
         <main className="content">
           <Routes>
             <Route path="/" element={<History />} />
+            <Route path="/new" element={<RecordNew />} />
+            <Route path="/record/:id" element={<RecordDetail />} />
             <Route path="/check" element={<Check />} />
           </Routes>
         </main>

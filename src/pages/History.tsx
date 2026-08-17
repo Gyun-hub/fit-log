@@ -1,13 +1,11 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { ClothingRecord } from '../types'
 import { FIT_LABEL } from '../types'
-import { loadRecords, createRecord, updateRecord, deleteRecord } from '../storage'
-import RecordForm from './RecordForm'
+import { loadRecords } from '../storage'
 
 export default function History() {
-  const [records, setRecords] = useState<ClothingRecord[]>(() => loadRecords())
-  const [showForm, setShowForm] = useState(false)
-  const [editing, setEditing] = useState<ClothingRecord | null>(null)
+  const [records] = useState<ClothingRecord[]>(() => loadRecords())
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
 
@@ -19,49 +17,14 @@ export default function History() {
     })
   }, [records, dateFrom, dateTo])
 
-  function refresh() {
-    setRecords(loadRecords())
-  }
-
-  function handleCreate(data: Omit<ClothingRecord, 'id' | 'createdAt'>) {
-    createRecord(data)
-    refresh()
-    setShowForm(false)
-  }
-
-  function handleUpdate(data: Omit<ClothingRecord, 'id' | 'createdAt'>) {
-    if (!editing) return
-    updateRecord(editing.id, data)
-    refresh()
-    setEditing(null)
-  }
-
-  function handleDelete(id: string) {
-    if (!confirm('이 이력을 삭제할까요?')) return
-    deleteRecord(id)
-    refresh()
-  }
-
   return (
     <div className="page">
       <div className="page-header">
         <h1>내 옷 이력</h1>
-        <button className="btn primary" onClick={() => setShowForm(true)}>
+        <Link to="/new" className="btn primary">
           + 이력 등록
-        </button>
+        </Link>
       </div>
-
-      {showForm && (
-        <div className="panel">
-          <RecordForm onSubmit={handleCreate} onCancel={() => setShowForm(false)} />
-        </div>
-      )}
-
-      {editing && (
-        <div className="panel">
-          <RecordForm initial={editing} onSubmit={handleUpdate} onCancel={() => setEditing(null)} />
-        </div>
-      )}
 
       <div className="date-filter">
         <label>
@@ -93,7 +56,7 @@ export default function History() {
       ) : (
         <div className="record-list">
           {visibleRecords.map((r) => (
-            <div key={r.id} className="record-card">
+            <Link key={r.id} to={`/record/${r.id}`} className="record-card record-card-link">
               <div className="record-card-head">
                 {r.imageUrl && <img className="record-thumb" src={r.imageUrl} alt={r.brand} />}
                 <span className="tag">{r.category}</span>
@@ -112,26 +75,9 @@ export default function History() {
               <div className="record-card-foot">
                 <span>
                   {r.source} {r.purchaseDate}
-                  {r.productUrl && (
-                    <>
-                      {' '}
-                      ·{' '}
-                      <a href={r.productUrl} target="_blank" rel="noreferrer">
-                        상품 링크
-                      </a>
-                    </>
-                  )}
                 </span>
-                <div className="record-actions">
-                  <button className="btn small" onClick={() => setEditing(r)}>
-                    수정
-                  </button>
-                  <button className="btn small danger" onClick={() => handleDelete(r.id)}>
-                    삭제
-                  </button>
-                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
